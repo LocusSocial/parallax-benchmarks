@@ -27,8 +27,10 @@ def is_return_eligible(request: ReturnRequest) -> bool:
     except ZoneInfoNotFoundError as error:
         raise ValueError("customer_timezone must be a valid IANA timezone") from error
 
+    if request.requested_at < request.delivered_at:
+        return False
+
     delivered = request.delivered_at.astimezone(zone).date()
     requested = request.requested_at.astimezone(zone).date()
     elapsed_calendar_days = (requested - delivered).days
     return 0 <= elapsed_calendar_days <= 30
-

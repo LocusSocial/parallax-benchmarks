@@ -3,7 +3,7 @@ faf13404be2489e194ad0a5fcd8fbf74909ea7f8887ac4ed2b8fc6b437445c24  ./README.md
 7031b8ed50eb05b3cececf4e3d3a63a3351880fef75a9e523e71ec77e7f46818  ./benchmarks/return-window-v1/README.md
 37950af241b5bb42237e1494e6134bf5aa157c968a9d1d0aa508b1622170b1d4  ./benchmarks/return-window-v1/RESULTS-2026-09-04.md
 caa6825dd124a1b83fdc39bad1ed94171d6ca3ed7cbe824c523900da9eeec78a  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/after.json
-914ab14e265ab2c0d7bba570a5dad438f96a978f1976bb63197ac0fcbf6041d2  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/before.json
+4420ad68a9ea55176e3a83c59467f64a2dd40c431e4eeeddc637e8608b976b27  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/before.json
 6021fdee7c5259ae7a3455ba5ad6780676c67f0db9ab36ed4c993b5d2d808510  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/final-message.md
 4ac6d8600e269af618e59f4ea6431569fd92ef6034277a5be90ec3e4b5f282b2  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/metadata.json
 ca84d8b637c543ba35903c969b02784366be978b2c7c3ecd51260eff05e28dc5  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/prompt.md
@@ -13,8 +13,8 @@ ca84d8b637c543ba35903c969b02784366be978b2c7c3ecd51260eff05e28dc5  ./benchmarks/r
 488a0584e87b3b9a788e5f578a9d02cb490d3253193740bbdb8636777edc4df6  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/workspace/src/__init__.py
 6aaa118916c89b21c374f26141343d75ea1cfe91b4f07d2824e900cc29c42c8e  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/workspace/src/return_policy.py
 5cee9de362e7dd61f4b05099604667c58b53685d496ca34a2f4603e1dc742cf2  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-goal-first-r1/workspace/tests/test_return_policy.py
-fd906b3d6438f55bbfe5f973cd0d7364881560128f30e4df2d5c102ea145965c  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/after.json
-2b0e1ab9698b3649737212beb3c7c1f21bb0b2be60d7e67a4e9b003bae7a5a11  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/before.json
+1ecbb1c34765228b2e8f184a9192ff94afb29d303e6162ec9b40a909278c4c69  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/after.json
+2122821b0217160e09e5b038747149b155646ff4173f39aaee29973725c762a8  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/before.json
 50c2c140726c22a9c18d7d8f0cdc43cafdf765108265173bb531595d2779b3df  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/final-message.md
 4ec64a950731a6038bb733599d91157a82bf6bd60c92da018334bfa32a8165cd  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/metadata.json
 0b8c24b2af6d7c5fb31b3d201d244611b6b27044ce74bd54092b5c95b5d1dd0b  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/prompt.md
@@ -23,12 +23,12 @@ f079731bc0735f56bba120f126d70a91a911290dddb0f5177a1a68a54fcd050b  ./benchmarks/r
 488a0584e87b3b9a788e5f578a9d02cb490d3253193740bbdb8636777edc4df6  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/workspace/src/__init__.py
 0b3be3062f0c250f97e53dbeab7c247c981dcafd196a5df96b4b5500108929af  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/workspace/src/return_policy.py
 5f6c6fc60c11ab8e9162188d6e55abd20d0c71dbb889a1a09740b9baacf9fce5  ./benchmarks/return-window-v1/evidence/2026-09-04-codex-spec-bound-r1/workspace/tests/test_return_policy.py
-9ea6c9d5fb99ed0a78f83bcc485ce8e0e4d38b41ccf95f88b632eea8b08676e4  ./benchmarks/return-window-v1/oracle_tests/test_business_goal.py
+4d9e569588261caa2b25b8bfbea3d0666e66e01359473dfd621863c24e203784  ./benchmarks/return-window-v1/oracle_tests/test_business_goal.py
 ca84d8b637c543ba35903c969b02784366be978b2c7c3ecd51260eff05e28dc5  ./benchmarks/return-window-v1/prompts/goal-first-single.md
 2c525f8c7cbfe77af18843acf2d3e4fe445310e4d2a4e3f19ddce2aeba33aa94  ./benchmarks/return-window-v1/prompts/parallax-goal-first.md
 0b8c24b2af6d7c5fb31b3d201d244611b6b27044ce74bd54092b5c95b5d1dd0b  ./benchmarks/return-window-v1/prompts/spec-bound-review.md
 e2dd0b49757cd8ca8f6c773cc4bacafba0229bc63f668c1e3340b13fcb8185de  ./benchmarks/return-window-v1/reference/src/__init__.py
-350c6423a4306109ef5be167a029c4ed398e8502eab3657d443aaca914d7f726  ./benchmarks/return-window-v1/reference/src/return_policy.py
+3af43c88128566b53ad0241d6a5bf9df693f0d04f306066b6d74da03c1698b46  ./benchmarks/return-window-v1/reference/src/return_policy.py
 1b34b540daab598bd79670064267acca0438ed0f3f17bc50e58896b76a9fbc0a  ./benchmarks/return-window-v1/reference/tests/test_return_policy.py
 56b402c93e86e05254022e33e5d539f23552ae647d5e895816a974baa04c5e01  ./benchmarks/return-window-v1/scripts/export-public-result.py
 8480c07bd0a4667168bfc7522d98cc8e8702770d1ec8301bfff041765260113d  ./benchmarks/return-window-v1/scripts/prepare.py

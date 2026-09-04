@@ -20,13 +20,20 @@ class BusinessGoalOracle(unittest.TestCase):
         self.assertTrue(is_return_eligible(request))
 
     def test_rw_002_request_before_delivery_is_rejected(self) -> None:
-        request = ReturnRequest(
+        earlier_day = ReturnRequest(
             purchased_at=instant(2026, 1, 1, 9, 0, "UTC"),
             delivered_at=instant(2026, 1, 10, 9, 0, "UTC"),
             requested_at=instant(2026, 1, 5, 9, 0, "UTC"),
             customer_timezone="UTC",
         )
-        self.assertFalse(is_return_eligible(request))
+        same_local_day_but_earlier_instant = ReturnRequest(
+            purchased_at=instant(2026, 1, 1, 9, 0, "America/Los_Angeles"),
+            delivered_at=instant(2026, 1, 10, 12, 0, "America/Los_Angeles"),
+            requested_at=instant(2026, 1, 10, 11, 59, "America/Los_Angeles"),
+            customer_timezone="America/Los_Angeles",
+        )
+        self.assertFalse(is_return_eligible(earlier_day))
+        self.assertFalse(is_return_eligible(same_local_day_but_earlier_instant))
 
     def test_rw_003_end_of_local_day_30_is_inclusive(self) -> None:
         zone = "America/Los_Angeles"
@@ -61,4 +68,3 @@ class BusinessGoalOracle(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
