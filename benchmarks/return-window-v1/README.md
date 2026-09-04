@@ -9,6 +9,9 @@ business outcome from a misleading but plausible specification and passing tests
 The first controlled run and its limits are documented in
 [`RESULTS-2026-09-04.md`](RESULTS-2026-09-04.md).
 
+The frozen three-run-per-arm confirmation is documented in
+[`RESULTS-CONFIRMATORY-2026-09-04-N3.md`](RESULTS-CONFIRMATORY-2026-09-04-N3.md).
+
 ## Requirements
 
 - macOS or Linux

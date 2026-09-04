@@ -1,0 +1,25 @@
+{
+  "benchmark": "return-window-v1",
+  "implementation_sha256": "6fe2132094e2aef7ed8467201b8b59e5e24f4ff14e70605a81878d2505cd7b83",
+  "oracle": {
+    "errors": 0,
+    "failed": 0,
+    "failed_requirements": [],
+    "output": "test_rw_001_delivery_starts_the_window (test_business_goal.BusinessGoalOracle.test_rw_001_delivery_starts_the_window) ... ok\ntest_rw_002_request_before_delivery_is_rejected (test_business_goal.BusinessGoalOracle.test_rw_002_request_before_delivery_is_rejected) ... ok\ntest_rw_003_end_of_local_day_30_is_inclusive (test_business_goal.BusinessGoalOracle.test_rw_003_end_of_local_day_30_is_inclusive) ... ok\ntest_rw_004_dst_does_not_shorten_calendar_window (test_business_goal.BusinessGoalOracle.test_rw_004_dst_does_not_shorten_calendar_window) ... ok\ntest_rw_005_timezone_is_validated_and_used (test_business_goal.BusinessGoalOracle.test_rw_005_timezone_is_validated_and_used) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.003s\n\nOK\n",
+    "passed": 5,
+    "passed_requirements": [
+      "test_rw_001_delivery_starts_the_window",
+      "test_rw_002_request_before_delivery_is_rejected",
+      "test_rw_003_end_of_local_day_30_is_inclusive",
+      "test_rw_004_dst_does_not_shorten_calendar_window",
+      "test_rw_005_timezone_is_validated_and_used"
+    ],
+    "total": 5
+  },
+  "score": "5/5",
+  "submission_sha256": "ba59d80ce351cd44ebb9c7d1eba9dd08f80b112fbae3163e1cb8183bc6d9ae39",
+  "visible_tests": {
+    "exit_code": 0,
+    "output": "test_customer_timezone_controls_calendar_dates (test_return_policy.ReturnPolicyTests.test_customer_timezone_controls_calendar_dates) ... ok\ntest_dst_change_does_not_turn_day_30_into_an_elapsed_time_limit (test_return_policy.ReturnPolicyTests.test_dst_change_does_not_turn_day_30_into_an_elapsed_time_limit) ... ok\ntest_each_timezone_naive_timestamp_is_rejected (test_return_policy.ReturnPolicyTests.test_each_timezone_naive_timestamp_is_rejected) ... ok\ntest_invalid_customer_timezone_is_rejected (test_return_policy.ReturnPolicyTests.test_invalid_customer_timezone_is_rejected) ... ok\ntest_pre_delivery_check_uses_instants_during_dst_fold (test_return_policy.ReturnPolicyTests.test_pre_delivery_check_uses_instants_during_dst_fold) ... ok\ntest_purchase_time_does_not_start_the_window (test_return_policy.ReturnPolicyTests.test_purchase_time_does_not_start_the_window) ... ok\ntest_request_at_delivery_is_eligible (test_return_policy.ReturnPolicyTests.test_request_at_delivery_is_eligible) ... ok\ntest_request_at_end_of_local_day_30_is_eligible (test_return_policy.ReturnPolicyTests.test_request_at_end_of_local_day_30_is_eligible) ... ok\ntest_request_at_start_of_local_day_31_is_not_eligible (test_return_policy.ReturnPolicyTests.test_request_at_start_of_local_day_31_is_not_eligible) ... ok\ntest_request_before_delivery_is_not_eligible_on_same_local_day (test_return_policy.ReturnPolicyTests.test_request_before_delivery_is_not_eligible_on_same_local_day) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.006s\n\nOK\n"
+  }
+}

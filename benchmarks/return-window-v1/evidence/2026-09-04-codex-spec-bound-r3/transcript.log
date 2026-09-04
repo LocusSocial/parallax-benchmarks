@@ -1,0 +1,804 @@
+2026-09-04T07:41:18.799532Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.803305Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.806443Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.809617Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.812969Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.816467Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.819992Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.822996Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.826172Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.829109Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+OpenAI Codex v0.153.0
+--------
+workdir: <run-root>/workspace
+model: gpt-5.6-sol
+provider: openai
+approval: on-request
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: high
+reasoning summaries: none
+session id: <redacted>
+--------
+user
+# Frozen prompt: specification-bound review
+
+Review and repair the project in your working directory against `SPEC.md`.
+
+Treat the existing specification as authoritative. Inspect the implementation and visible tests,
+fix any discrepancy you find, add relevant visible tests, and run the visible test suite. Do not
+read files outside the working directory. Do not look for hidden tests or benchmark material.
+
+At the end, report the files changed, commands run, and test results.
+
+
+2026-09-04T07:41:18.861619Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.865056Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.868581Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.871885Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.875558Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.879459Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.882740Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.885757Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.888850Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.891755Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.894706Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.897687Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.900644Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:18.903693Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:41:23.790405Z  WARN codex_core_plugins::manager: failed to load recommended plugins error=failed to parse remote plugin catalog response from https://chatgpt.com/backend-api/ps/plugins/suggested/codex?scope=GLOBAL: EOF while parsing a value at line 1 column 0
+codex
+I’ll audit `SPEC.md`, the implementation, and visible tests entirely within the working directory, then repair discrepancies and run the relevant test suite.
+exec
+/bin/zsh -lc "pwd && rg --files -g '"'!*node_modules*'"' -g '"'!*.pyc'"' | sort" in <run-root>/workspace
+ succeeded in 0ms:
+<run-root>/workspace
+SPEC.md
+src/__init__.py
+src/return_policy.py
+tests/test_return_policy.py
+
+exec
+/bin/zsh -lc "sed -n '1,240p' SPEC.md && sed -n '1,280p' src/return_policy.py && sed -n '1,320p' tests/test_return_policy.py && sed -n '1,120p' src/__init__.py" in <run-root>/workspace
+ succeeded in 0ms:
+# Existing implementation specification
+
+An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
+
+The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
+"""Return eligibility implementation for the current 30-day policy."""
+
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+
+
+@dataclass(frozen=True)
+class ReturnRequest:
+    purchased_at: datetime
+    delivered_at: datetime
+    requested_at: datetime
+    customer_timezone: str
+
+
+def _require_aware(value: datetime, field: str) -> None:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError(f"{field} must be timezone-aware")
+
+
+def is_return_eligible(request: ReturnRequest) -> bool:
+    """Return whether a request satisfies the existing 30-day specification."""
+
+    _require_aware(request.purchased_at, "purchased_at")
+    _require_aware(request.delivered_at, "delivered_at")
+    _require_aware(request.requested_at, "requested_at")
+
+    elapsed = request.requested_at - request.purchased_at
+    return timedelta(0) <= elapsed <= timedelta(days=30)
+import unittest
+from datetime import datetime, timedelta, timezone
+
+from src.return_policy import ReturnRequest, is_return_eligible
+
+
+class ExistingSpecificationTests(unittest.TestCase):
+    def request(self, elapsed: timedelta) -> ReturnRequest:
+        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
+        return ReturnRequest(
+            purchased_at=purchased,
+            delivered_at=purchased,
+            requested_at=purchased + elapsed,
+            customer_timezone="UTC",
+        )
+
+    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+
+    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+        self.assertFalse(
+            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+        )
+
+    def test_request_before_purchase_is_not_eligible(self) -> None:
+        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+
+    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+        request = self.request(timedelta(days=1))
+        invalid = ReturnRequest(
+            purchased_at=request.purchased_at.replace(tzinfo=None),
+            delivered_at=request.delivered_at,
+            requested_at=request.requested_at,
+            customer_timezone=request.customer_timezone,
+        )
+        with self.assertRaises(ValueError):
+            is_return_eligible(invalid)
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+"""Return-window demo package."""
+
+
+codex
+The core arithmetic is already aligned, but the visible suite misses the exact inclusive boundary and validation of the other timestamp inputs. I’m checking baseline behavior and repository state before deciding whether UTC-awareness needs stricter enforcement.
+exec
+/bin/zsh -lc 'git status --short && git log -5 --oneline --decorate && python -m unittest discover -v' in <run-root>/workspace
+ exited 127 in 0ms:
+ M ../../../../../.parallax-build-number
+?? ../../../PROTOCOL-2026-09-04-N3.md
+?? ../../../scripts/run-confirmatory-n3.py
+?? ../../../../../output/
+?? ../../../../../tmp/
+0d9732f (HEAD -> main, origin/main) Use bounded local context for delayed routing
+2816b5b Route delayed replies to latest visible pane
+ec18a5c Preserve continuity across Main Window clear
+bf5a340 Record build 319 release candidate
+6117094 Add reproducible return-window benchmark
+zsh:1: command not found: python
+
+exec
+/bin/zsh -lc 'python3 -m unittest discover -v' in <run-root>/workspace
+ exited 5 in 0ms:
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+NO TESTS RAN
+
+exec
+/bin/zsh -lc 'python3 -m unittest discover -s tests -v' in <run-root>/workspace
+ succeeded in 0ms:
+test_request_after_30_elapsed_days_is_not_eligible (test_return_policy.ExistingSpecificationTests.test_request_after_30_elapsed_days_is_not_eligible) ... ok
+test_request_before_purchase_is_not_eligible (test_return_policy.ExistingSpecificationTests.test_request_before_purchase_is_not_eligible) ... ok
+test_request_within_30_elapsed_days_is_eligible (test_return_policy.ExistingSpecificationTests.test_request_within_30_elapsed_days_is_eligible) ... ok
+test_timezone_naive_timestamp_is_rejected (test_return_policy.ExistingSpecificationTests.test_timezone_naive_timestamp_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK
+
+codex
+Baseline behavior passes when discovery is pointed at `tests/` (4 tests). The implementation itself matches the specified purchase-to-request elapsed-time rule; I’m adding coverage for both inclusive endpoints, every timestamp’s naïve-input rejection, and the fact that delivery time/customer timezone do not redefine the window.
+apply patch
+patch: completed
+<run-root>/workspace/tests/test_return_policy.py
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d7e770753f132aeed25316516d66d86f7e6dcd5a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+@@ -1,4 +1,5 @@
+ import unittest
++from dataclasses import replace
+ from datetime import datetime, timedelta, timezone
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+@@ -17,6 +18,12 @@
+     def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+         self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+ 
++    def test_request_at_purchase_time_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
++
++    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
++
+     def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+             is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+@@ -25,18 +32,26 @@
+     def test_request_before_purchase_is_not_eligible(self) -> None:
+         self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
++    def test_timezone_naive_timestamps_are_rejected(self) -> None:
+         request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request,
++                    **{field: getattr(request, field).replace(tzinfo=None)},
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_only_purchase_and_request_times_define_the_window(self) -> None:
++        request = replace(
++            self.request(timedelta(days=30)),
++            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
++            customer_timezone="Pacific/Kiritimati",
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++        self.assertTrue(is_return_eligible(request))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d7e770753f132aeed25316516d66d86f7e6dcd5a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+@@ -1,4 +1,5 @@
+ import unittest
++from dataclasses import replace
+ from datetime import datetime, timedelta, timezone
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+@@ -17,6 +18,12 @@
+     def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+         self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+ 
++    def test_request_at_purchase_time_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
++
++    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
++
+     def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+             is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+@@ -25,18 +32,26 @@
+     def test_request_before_purchase_is_not_eligible(self) -> None:
+         self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
++    def test_timezone_naive_timestamps_are_rejected(self) -> None:
+         request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request,
++                    **{field: getattr(request, field).replace(tzinfo=None)},
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_only_purchase_and_request_times_define_the_window(self) -> None:
++        request = replace(
++            self.request(timedelta(days=30)),
++            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
++            customer_timezone="Pacific/Kiritimati",
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++        self.assertTrue(is_return_eligible(request))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+exec
+/bin/zsh -lc 'python3 -m unittest discover -s tests -v && python3 -m compileall -q src tests && git diff -- src/return_policy.py tests/test_return_policy.py' in <run-root>/workspace
+ succeeded in 0ms:
+test_only_purchase_and_request_times_define_the_window (test_return_policy.ExistingSpecificationTests.test_only_purchase_and_request_times_define_the_window) ... ok
+test_request_after_30_elapsed_days_is_not_eligible (test_return_policy.ExistingSpecificationTests.test_request_after_30_elapsed_days_is_not_eligible) ... ok
+test_request_at_exactly_30_elapsed_days_is_eligible (test_return_policy.ExistingSpecificationTests.test_request_at_exactly_30_elapsed_days_is_eligible) ... ok
+test_request_at_purchase_time_is_eligible (test_return_policy.ExistingSpecificationTests.test_request_at_purchase_time_is_eligible) ... ok
+test_request_before_purchase_is_not_eligible (test_return_policy.ExistingSpecificationTests.test_request_before_purchase_is_not_eligible) ... ok
+test_request_within_30_elapsed_days_is_eligible (test_return_policy.ExistingSpecificationTests.test_request_within_30_elapsed_days_is_eligible) ... ok
+test_timezone_naive_timestamps_are_rejected (test_return_policy.ExistingSpecificationTests.test_timezone_naive_timestamps_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.000s
+
+OK
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d7e770753f132aeed25316516d66d86f7e6dcd5a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+@@ -1,4 +1,5 @@
+ import unittest
++from dataclasses import replace
+ from datetime import datetime, timedelta, timezone
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+@@ -17,6 +18,12 @@
+     def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+         self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+ 
++    def test_request_at_purchase_time_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
++
++    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
++
+     def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+             is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+@@ -25,18 +32,26 @@
+     def test_request_before_purchase_is_not_eligible(self) -> None:
+         self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
++    def test_timezone_naive_timestamps_are_rejected(self) -> None:
+         request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request,
++                    **{field: getattr(request, field).replace(tzinfo=None)},
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_only_purchase_and_request_times_define_the_window(self) -> None:
++        request = replace(
++            self.request(timedelta(days=30)),
++            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
++            customer_timezone="Pacific/Kiritimati",
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++        self.assertTrue(is_return_eligible(request))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+codex
+All seven specification-focused tests now pass, and both source and tests compile cleanly. I’m doing one final scoped review of the workspace diff/status so the handoff names only files touched here.
+exec
+/bin/zsh -lc "git status --short --untracked-files=all -- . && git diff --no-index /dev/null tests/test_return_policy.py || true && sed -n '1,240p' tests/test_return_policy.py" in <run-root>/workspace
+ succeeded in 0ms:
+diff --git a/tests/test_return_policy.py b/tests/test_return_policy.py
+new file mode 100644
+index 0000000..d7e7707
+--- /dev/null
++++ b/tests/test_return_policy.py
+@@ -0,0 +1,57 @@
++import unittest
++from dataclasses import replace
++from datetime import datetime, timedelta, timezone
++
++from src.return_policy import ReturnRequest, is_return_eligible
++
++
++class ExistingSpecificationTests(unittest.TestCase):
++    def request(self, elapsed: timedelta) -> ReturnRequest:
++        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++        return ReturnRequest(
++            purchased_at=purchased,
++            delivered_at=purchased,
++            requested_at=purchased + elapsed,
++            customer_timezone="UTC",
++        )
++
++    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++
++    def test_request_at_purchase_time_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
++
++    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
++
++    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
++        self.assertFalse(
++            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++        )
++
++    def test_request_before_purchase_is_not_eligible(self) -> None:
++        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++
++    def test_timezone_naive_timestamps_are_rejected(self) -> None:
++        request = self.request(timedelta(days=1))
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request,
++                    **{field: getattr(request, field).replace(tzinfo=None)},
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_only_purchase_and_request_times_define_the_window(self) -> None:
++        request = replace(
++            self.request(timedelta(days=30)),
++            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
++            customer_timezone="Pacific/Kiritimati",
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++
++if __name__ == "__main__":
++    unittest.main()
+import unittest
+from dataclasses import replace
+from datetime import datetime, timedelta, timezone
+
+from src.return_policy import ReturnRequest, is_return_eligible
+
+
+class ExistingSpecificationTests(unittest.TestCase):
+    def request(self, elapsed: timedelta) -> ReturnRequest:
+        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
+        return ReturnRequest(
+            purchased_at=purchased,
+            delivered_at=purchased,
+            requested_at=purchased + elapsed,
+            customer_timezone="UTC",
+        )
+
+    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+
+    def test_request_at_purchase_time_is_eligible(self) -> None:
+        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
+
+    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
+        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
+
+    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+        self.assertFalse(
+            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+        )
+
+    def test_request_before_purchase_is_not_eligible(self) -> None:
+        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+
+    def test_timezone_naive_timestamps_are_rejected(self) -> None:
+        request = self.request(timedelta(days=1))
+        for field in ("purchased_at", "delivered_at", "requested_at"):
+            with self.subTest(field=field):
+                invalid = replace(
+                    request,
+                    **{field: getattr(request, field).replace(tzinfo=None)},
+                )
+                with self.assertRaisesRegex(ValueError, field):
+                    is_return_eligible(invalid)
+
+    def test_only_purchase_and_request_times_define_the_window(self) -> None:
+        request = replace(
+            self.request(timedelta(days=30)),
+            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
+            customer_timezone="Pacific/Kiritimati",
+        )
+
+        self.assertTrue(is_return_eligible(request))
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d7e770753f132aeed25316516d66d86f7e6dcd5a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+@@ -1,4 +1,5 @@
+ import unittest
++from dataclasses import replace
+ from datetime import datetime, timedelta, timezone
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+@@ -17,6 +18,12 @@
+     def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+         self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+ 
++    def test_request_at_purchase_time_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
++
++    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
++
+     def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+             is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+@@ -25,18 +32,26 @@
+     def test_request_before_purchase_is_not_eligible(self) -> None:
+         self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
++    def test_timezone_naive_timestamps_are_rejected(self) -> None:
+         request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request,
++                    **{field: getattr(request, field).replace(tzinfo=None)},
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_only_purchase_and_request_times_define_the_window(self) -> None:
++        request = replace(
++            self.request(timedelta(days=30)),
++            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
++            customer_timezone="Pacific/Kiritimati",
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++        self.assertTrue(is_return_eligible(request))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+exec
+/bin/zsh -lc 'rg --files -uu | sort' in <run-root>/workspace
+ succeeded in 0ms:
+SPEC.md
+src/__init__.py
+src/__pycache__/__init__.cpython-312.pyc
+src/__pycache__/return_policy.cpython-312.pyc
+src/return_policy.py
+tests/__pycache__/test_return_policy.cpython-312.pyc
+tests/test_return_policy.py
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d7e770753f132aeed25316516d66d86f7e6dcd5a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+@@ -1,4 +1,5 @@
+ import unittest
++from dataclasses import replace
+ from datetime import datetime, timedelta, timezone
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+@@ -17,6 +18,12 @@
+     def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+         self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+ 
++    def test_request_at_purchase_time_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
++
++    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
++
+     def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+             is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+@@ -25,18 +32,26 @@
+     def test_request_before_purchase_is_not_eligible(self) -> None:
+         self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
++    def test_timezone_naive_timestamps_are_rejected(self) -> None:
+         request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request,
++                    **{field: getattr(request, field).replace(tzinfo=None)},
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_only_purchase_and_request_times_define_the_window(self) -> None:
++        request = replace(
++            self.request(timedelta(days=30)),
++            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
++            customer_timezone="Pacific/Kiritimati",
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++        self.assertTrue(is_return_eligible(request))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+exec
+/bin/zsh -lc 'rm -r src/__pycache__ tests/__pycache__ && rg --files -uu | sort' in <run-root>/workspace
+ succeeded in 0ms:
+SPEC.md
+src/__init__.py
+src/return_policy.py
+tests/test_return_policy.py
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d7e770753f132aeed25316516d66d86f7e6dcd5a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+@@ -1,4 +1,5 @@
+ import unittest
++from dataclasses import replace
+ from datetime import datetime, timedelta, timezone
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+@@ -17,6 +18,12 @@
+     def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+         self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+ 
++    def test_request_at_purchase_time_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
++
++    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
++
+     def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+             is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+@@ -25,18 +32,26 @@
+     def test_request_before_purchase_is_not_eligible(self) -> None:
+         self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
++    def test_timezone_naive_timestamps_are_rejected(self) -> None:
+         request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request,
++                    **{field: getattr(request, field).replace(tzinfo=None)},
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_only_purchase_and_request_times_define_the_window(self) -> None:
++        request = replace(
++            self.request(timedelta(days=30)),
++            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
++            customer_timezone="Pacific/Kiritimati",
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++        self.assertTrue(is_return_eligible(request))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+codex
+Reviewed against `SPEC.md`. The implementation already conformed, so no source changes were necessary.
+
+Changed:
+
+- [tests/test_return_policy.py](<run-root>/workspace/tests/test_return_policy.py) — added coverage for both inclusive boundaries, all naïve timestamp fields, and ignoring delivery/customer timezone when calculating the window.
+
+Commands run:
+
+- `python3 -m unittest discover -s tests -v`
+- `python3 -m compileall -q src tests`
+- Supporting `rg`, `sed`, and Git inspection commands
+- `python` was unavailable; `python3` was used instead.
+
+Results:
+
+- 7 tests passed.
+- Source and tests compiled successfully.
+- Generated `__pycache__` artifacts were removed.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d7e770753f132aeed25316516d66d86f7e6dcd5a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-spec-bound-r3/workspace/tests/test_return_policy.py
+@@ -1,4 +1,5 @@
+ import unittest
++from dataclasses import replace
+ from datetime import datetime, timedelta, timezone
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+@@ -17,6 +18,12 @@
+     def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+         self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+ 
++    def test_request_at_purchase_time_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(0))))
++
++    def test_request_at_exactly_30_elapsed_days_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request(timedelta(days=30))))
++
+     def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+             is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+@@ -25,18 +32,26 @@
+     def test_request_before_purchase_is_not_eligible(self) -> None:
+         self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
++    def test_timezone_naive_timestamps_are_rejected(self) -> None:
+         request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request,
++                    **{field: getattr(request, field).replace(tzinfo=None)},
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_only_purchase_and_request_times_define_the_window(self) -> None:
++        request = replace(
++            self.request(timedelta(days=30)),
++            delivered_at=datetime(2027, 1, 1, tzinfo=timezone.utc),
++            customer_timezone="Pacific/Kiritimati",
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++        self.assertTrue(is_return_eligible(request))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+tokens used
+16,947
+Reviewed against `SPEC.md`. The implementation already conformed, so no source changes were necessary.
+
+Changed:
+
+- [tests/test_return_policy.py](<run-root>/workspace/tests/test_return_policy.py) — added coverage for both inclusive boundaries, all naïve timestamp fields, and ignoring delivery/customer timezone when calculating the window.
+
+Commands run:
+
+- `python3 -m unittest discover -s tests -v`
+- `python3 -m compileall -q src tests`
+- Supporting `rg`, `sed`, and Git inspection commands
+- `python` was unavailable; `python3` was used instead.
+
+Results:
+
+- 7 tests passed.
+- Source and tests compiled successfully.
+- Generated `__pycache__` artifacts were removed.

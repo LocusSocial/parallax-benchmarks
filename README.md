@@ -32,7 +32,20 @@ python3 benchmarks/return-window-v1/scripts/verify.py
 Read the full [methodology](benchmarks/return-window-v1/README.md) and
 [first controlled result](benchmarks/return-window-v1/RESULTS-2026-09-04.md).
 
-## First controlled result
+## Confirmatory result
+
+After the exploratory pair, we froze and completed three new repetitions per arm:
+
+| Workflow | Repetitions | Independent goal oracle |
+| --- | ---: | ---: |
+| Review against the existing Spec | 3/3 valid | **0/5 in all three** |
+| Restart from the original business goal | 3/3 valid | **5/5 in all three** |
+
+All six visible test suites passed. Read the frozen
+[protocol](benchmarks/return-window-v1/PROTOCOL-2026-09-04-N3.md) and
+[confirmatory report](benchmarks/return-window-v1/RESULTS-CONFIRMATORY-2026-09-04-N3.md).
+
+## Exploratory result
 
 Same Codex model, effort, CLI version, and starting implementation; only the supplied engineering
 context changed:
@@ -42,10 +55,10 @@ context changed:
 | Review against the existing Spec | PASS (8) | **0/5** |
 | Restart from the original business goal | PASS (9) | **5/5** |
 
-This is one reproducible case study, not a universal model-quality or product-superiority claim.
-The runs were not token-budget matched, so token usage and wall time are reported explicitly. The
-published evidence includes frozen prompts, before/after scores, exact hashes, edited workspaces,
-sanitized transcripts, final messages, model settings, and tool version.
+This remains one small known-answer fixture, not a universal model-quality or product-superiority
+claim. The runs were not token-budget matched, so token usage and wall time are reported
+explicitly. The published evidence includes frozen prompts, before/after scores, exact hashes,
+edited workspaces, sanitized transcripts, final messages, model settings, and tool version.
 
 ## Why Parallax is measuring this
 

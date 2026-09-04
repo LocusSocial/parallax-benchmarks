@@ -1,0 +1,3005 @@
+2026-09-04T07:36:28.751767Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.756194Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.759844Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.763472Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.767183Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.770918Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.774626Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.778222Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.781796Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.785027Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.788305Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.792077Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.795407Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.798416Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+OpenAI Codex v0.153.0
+--------
+workdir: <run-root>/workspace
+model: gpt-5.6-sol
+provider: openai
+approval: on-request
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: high
+reasoning summaries: none
+session id: <redacted>
+--------
+user
+# Frozen prompt: goal-first single-model review
+
+Repair the project in your working directory from the original business objective in
+`BUSINESS_GOAL.md`.
+
+Read that objective before evaluating `SPEC.md`, the implementation, or the visible tests. Treat
+all derived artifacts as potentially wrong. State the assumptions and boundary cases implied by
+the original goal, repair the implementation and visible tests, and run the visible test suite.
+Do not read files outside the working directory. Do not look for hidden tests or benchmark
+material.
+
+At the end, report the files changed, commands run, and test results.
+
+
+2026-09-04T07:36:28.802501Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.806820Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.811676Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.815945Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.819817Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.824007Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.828097Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.833570Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.836822Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-04T07:36:28.839751Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+codex
+I’ll start exclusively from `BUSINESS_GOAL.md`, extract its implied rules and edge cases, and only then inspect the spec, code, and tests against that baseline.
+exec
+/bin/zsh -lc "sed -n '1,240p' BUSINESS_GOAL.md" in <run-root>/workspace
+ succeeded in 0ms:
+# Original business goal
+
+Customers may request a return through the end of the 30th calendar day after delivery.
+
+The delivery day is day 0. A request made on local calendar day 30 is eligible, even at 23:59.
+Eligibility must be evaluated in the customer's IANA timezone because the policy is shown to the
+customer as calendar dates, not as a number of elapsed hours.
+
+A request made before delivery is never eligible. All timestamps supplied to the policy are
+timezone-aware. An invalid timezone or a timezone-naive timestamp must be rejected explicitly.
+
+Purchase time is retained for order history, but it does not start the return window.
+
+
+codex
+From the goal, I’m treating eligibility as: the request instant must be at or after the delivery instant, and its customer-local calendar date must be no later than delivery-local date + 30 days. This makes exact delivery eligible, rejects an earlier instant even on the same local date, includes all of local day 30, handles DST by date rather than elapsed hours, rejects naïve timestamps and unknown/non-IANA zones, and never uses purchase time to open the window. I’ll now compare the derived artifacts to those rules.
+exec
+/bin/zsh -lc "pwd && rg --files -g '"'!BUSINESS_GOAL.md'"' | sort && sed -n '1,260p' SPEC.md" in <run-root>/workspace
+ succeeded in 0ms:
+<run-root>/workspace
+SPEC.md
+src/__init__.py
+src/return_policy.py
+tests/test_return_policy.py
+# Existing implementation specification
+
+An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
+
+The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
+
+exec
+/bin/zsh -lc "sed -n '1,280p' src/return_policy.py && sed -n '1,340p' tests/test_return_policy.py && sed -n '1,160p' src/__init__.py && git status --short" in <run-root>/workspace
+ succeeded in 0ms:
+"""Return eligibility implementation for the current 30-day policy."""
+
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+
+
+@dataclass(frozen=True)
+class ReturnRequest:
+    purchased_at: datetime
+    delivered_at: datetime
+    requested_at: datetime
+    customer_timezone: str
+
+
+def _require_aware(value: datetime, field: str) -> None:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError(f"{field} must be timezone-aware")
+
+
+def is_return_eligible(request: ReturnRequest) -> bool:
+    """Return whether a request satisfies the existing 30-day specification."""
+
+    _require_aware(request.purchased_at, "purchased_at")
+    _require_aware(request.delivered_at, "delivered_at")
+    _require_aware(request.requested_at, "requested_at")
+
+    elapsed = request.requested_at - request.purchased_at
+    return timedelta(0) <= elapsed <= timedelta(days=30)
+import unittest
+from datetime import datetime, timedelta, timezone
+
+from src.return_policy import ReturnRequest, is_return_eligible
+
+
+class ExistingSpecificationTests(unittest.TestCase):
+    def request(self, elapsed: timedelta) -> ReturnRequest:
+        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
+        return ReturnRequest(
+            purchased_at=purchased,
+            delivered_at=purchased,
+            requested_at=purchased + elapsed,
+            customer_timezone="UTC",
+        )
+
+    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+
+    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+        self.assertFalse(
+            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+        )
+
+    def test_request_before_purchase_is_not_eligible(self) -> None:
+        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+
+    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+        request = self.request(timedelta(days=1))
+        invalid = ReturnRequest(
+            purchased_at=request.purchased_at.replace(tzinfo=None),
+            delivered_at=request.delivered_at,
+            requested_at=request.requested_at,
+            customer_timezone=request.customer_timezone,
+        )
+        with self.assertRaises(ValueError):
+            is_return_eligible(invalid)
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+"""Return-window demo package."""
+
+?? ../../../PROTOCOL-2026-09-04-N3.md
+?? ../../../scripts/run-confirmatory-n3.py
+?? ../../../../../output/
+?? ../../../../../tmp/
+
+codex
+The implementation and spec both use purchase time and elapsed hours, so they conflict with the objective. I’m updating the contract and implementation around delivery-instant ordering plus customer-local date arithmetic, then replacing the visible tests with cases that distinguish those semantics—including day 30 late at night, day 31 during a DST-shortened interval, fall-back DST, invalid zones, and naïve values in every timestamp field.
+2026-09-04T07:38:01.676784Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in <run-root>/workspace/SPEC.md:
+# Existing implementation specification
+
+An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from
+`requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
+
+The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive
+timestamps are invalid.
+exec
+/bin/zsh -lc "sed -n '1,120l' SPEC.md && sed -n '1,220p' src/return_policy.py && git status --short -- SPEC.md src/return_policy.py tests/test_return_policy.py" in <run-root>/workspace
+ succeeded in 0ms:
+# Existing implementation specification$
+$
+An order is returnable for 30 days after purchase. The serv\
+ice should subtract `purchased_at` from `requested_at`; a n\
+on-negative duration no greater than `30 * 24` hours is eli\
+gible.$
+$
+The service receives UTC timestamps, so no timezone convers\
+ion is necessary. Timezone-naive timestamps are invalid.$
+"""Return eligibility implementation for the current 30-day policy."""
+
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+
+
+@dataclass(frozen=True)
+class ReturnRequest:
+    purchased_at: datetime
+    delivered_at: datetime
+    requested_at: datetime
+    customer_timezone: str
+
+
+def _require_aware(value: datetime, field: str) -> None:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError(f"{field} must be timezone-aware")
+
+
+def is_return_eligible(request: ReturnRequest) -> bool:
+    """Return whether a request satisfies the existing 30-day specification."""
+
+    _require_aware(request.purchased_at, "purchased_at")
+    _require_aware(request.delivered_at, "delivered_at")
+    _require_aware(request.requested_at, "requested_at")
+
+    elapsed = request.requested_at - request.purchased_at
+    return timedelta(0) <= elapsed <= timedelta(days=30)
+
+2026-09-04T07:38:49.815384Z ERROR codex_core::tools::router: error=apply_patch verification failed: invalid patch: multiple operations target <run-root>/workspace/SPEC.md
+apply patch
+patch: completed
+<run-root>/workspace/SPEC.md
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+
+apply patch
+patch: completed
+<run-root>/workspace/src/return_policy.py
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+
+apply patch
+patch: completed
+<run-root>/workspace/tests/test_return_policy.py
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+deleted file mode 100644
+index bd509a3074151aba25266b9f5e2694ba39c47863..0000000000000000000000000000000000000000
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ /dev/null
+@@ -1,42 +0,0 @@
+-import unittest
+-from datetime import datetime, timedelta, timezone
+-
+-from src.return_policy import ReturnRequest, is_return_eligible
+-
+-
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
+-        return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
+-        )
+-
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+-
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+-        self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+-        )
+-
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+-
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
+-        )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+-
+-
+-if __name__ == "__main__":
+-    unittest.main()
+-
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+deleted file mode 100644
+index bd509a3074151aba25266b9f5e2694ba39c47863..0000000000000000000000000000000000000000
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ /dev/null
+@@ -1,42 +0,0 @@
+-import unittest
+-from datetime import datetime, timedelta, timezone
+-
+-from src.return_policy import ReturnRequest, is_return_eligible
+-
+-
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
+-        return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
+-        )
+-
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
+-
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+-        self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
+-        )
+-
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
+-
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
+-        )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+-
+-
+-if __name__ == "__main__":
+-    unittest.main()
+-
+
+apply patch
+patch: completed
+<run-root>/workspace/tests/test_return_policy.py
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..72cb030e8b4ec6034a83b15630ec0493d5ea075a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,117 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
++        )
++
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
++
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..72cb030e8b4ec6034a83b15630ec0493d5ea075a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,117 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
++        )
++
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
++
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+exec
+/bin/zsh -lc 'python -m unittest discover -s tests -v' in <run-root>/workspace
+ exited 127 in 0ms:
+zsh:1: command not found: python
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..72cb030e8b4ec6034a83b15630ec0493d5ea075a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,117 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
++        )
++
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
++
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+codex
+The first test command exposed only an environment detail: `python` is not installed as an alias here. I’m rerunning with `python3`, then I’ll inspect the final diff and perform a focused boundary check.
+exec
+/bin/zsh -lc 'python3 -m unittest discover -s tests -v' in <run-root>/workspace
+ succeeded in 0ms:
+test_each_timezone_naive_timestamp_is_rejected (test_return_policy.ReturnPolicyTests.test_each_timezone_naive_timestamp_is_rejected) ... ok
+test_fall_back_does_not_shorten_day_30 (test_return_policy.ReturnPolicyTests.test_fall_back_does_not_shorten_day_30) ... ok
+test_invalid_customer_timezone_is_rejected (test_return_policy.ReturnPolicyTests.test_invalid_customer_timezone_is_rejected) ... ok
+test_purchase_time_does_not_start_return_window (test_return_policy.ReturnPolicyTests.test_purchase_time_does_not_start_return_window) ... ok
+test_request_at_delivery_is_eligible (test_return_policy.ReturnPolicyTests.test_request_at_delivery_is_eligible) ... ok
+test_request_at_end_of_local_day_30_is_eligible (test_return_policy.ReturnPolicyTests.test_request_at_end_of_local_day_30_is_eligible) ... ok
+test_request_before_delivery_is_not_eligible_on_same_local_day (test_return_policy.ReturnPolicyTests.test_request_before_delivery_is_not_eligible_on_same_local_day) ... ok
+test_request_on_local_day_31_is_not_eligible (test_return_policy.ReturnPolicyTests.test_request_on_local_day_31_is_not_eligible) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.006s
+
+OK
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..72cb030e8b4ec6034a83b15630ec0493d5ea075a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,117 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
++        )
++
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
++
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+exec
+/bin/zsh -lc 'git diff --check && git diff -- SPEC.md src/return_policy.py tests/test_return_policy.py && git status --short -- SPEC.md src/return_policy.py tests/test_return_policy.py' in <run-root>/workspace
+ succeeded in 0ms:
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..72cb030e8b4ec6034a83b15630ec0493d5ea075a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,117 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
++        )
++
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
++
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+exec
+/bin/zsh -lc "sed -n '1,240p' src/return_policy.py && sed -n '1,80p' SPEC.md && git rev-parse --show-toplevel && git ls-files -v -- SPEC.md src/return_policy.py tests/test_return_policy.py && git show HEAD:workspace/src/return_policy.py 2>&1 | sed -n '1,80p'" in <run-root>/workspace
+ succeeded in 0ms:
+"""Return eligibility implementation for the current 30-day policy."""
+
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+
+@dataclass(frozen=True)
+class ReturnRequest:
+    purchased_at: datetime
+    delivered_at: datetime
+    requested_at: datetime
+    customer_timezone: str
+
+
+def _require_aware(value: datetime, field: str) -> None:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError(f"{field} must be timezone-aware")
+
+
+def _customer_zone(name: str) -> ZoneInfo:
+    try:
+        return ZoneInfo(name)
+    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
+        raise ValueError(
+            "customer_timezone must be a valid IANA timezone"
+        ) from error
+
+
+def is_return_eligible(request: ReturnRequest) -> bool:
+    """Return whether a request is within the delivery-based return window."""
+
+    _require_aware(request.purchased_at, "purchased_at")
+    _require_aware(request.delivered_at, "delivered_at")
+    _require_aware(request.requested_at, "requested_at")
+    customer_zone = _customer_zone(request.customer_timezone)
+
+    delivered_instant = request.delivered_at.astimezone(timezone.utc)
+    requested_instant = request.requested_at.astimezone(timezone.utc)
+    if requested_instant < delivered_instant:
+        return False
+
+    delivered_date = request.delivered_at.astimezone(customer_zone).date()
+    requested_date = request.requested_at.astimezone(customer_zone).date()
+    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+# Return-window policy specification
+
+An order is returnable from its delivery instant through the end of the 30th calendar day after
+delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
+range is inclusive from the delivery date through `delivery date + 30 days`.
+
+A request whose instant is before delivery is ineligible, including one that falls on the same
+local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
+saving transitions do not shorten or extend the window.
+
+`purchased_at` is retained for order history and does not determine eligibility. All three
+timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
+timezone is rejected with `ValueError`.
+<home>/crypto/parallax
+fatal: path 'workspace/src/return_policy.py' does not exist in 'HEAD'
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..72cb030e8b4ec6034a83b15630ec0493d5ea075a
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,117 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
++        )
++
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
++
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+codex
+The repaired suite passes. The diff check is clean, and the implementation also normalizes delivery/request to UTC before comparing instants, avoiding Python’s same-zone “fold” ambiguity during the repeated hour when DST ends. I’m adding that specific regression case, then rerunning the complete visible suite.
+apply patch
+patch: completed
+<run-root>/workspace/tests/test_return_policy.py
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d556232eebabfdf0c032bdd0337b3d5817134287
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,132 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
++        )
++
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
++
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
++        )
++
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_request_before_delivery_is_not_eligible_during_repeated_hour(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 11, 1, 1, 30, tzinfo=zone, fold=1)
++        requested = datetime(2026, 11, 1, 1, 45, tzinfo=zone, fold=0)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d556232eebabfdf0c032bdd0337b3d5817134287
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,132 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
++        )
++
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
++
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
++        )
++
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_request_before_delivery_is_not_eligible_during_repeated_hour(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 11, 1, 1, 30, tzinfo=zone, fold=1)
++        requested = datetime(2026, 11, 1, 1, 45, tzinfo=zone, fold=0)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+exec
+/bin/zsh -lc 'python3 -m unittest discover -s tests -v && python3 -m compileall -q src tests' in <run-root>/workspace
+ succeeded in 0ms:
+test_each_timezone_naive_timestamp_is_rejected (test_return_policy.ReturnPolicyTests.test_each_timezone_naive_timestamp_is_rejected) ... ok
+test_fall_back_does_not_shorten_day_30 (test_return_policy.ReturnPolicyTests.test_fall_back_does_not_shorten_day_30) ... ok
+test_invalid_customer_timezone_is_rejected (test_return_policy.ReturnPolicyTests.test_invalid_customer_timezone_is_rejected) ... ok
+test_purchase_time_does_not_start_return_window (test_return_policy.ReturnPolicyTests.test_purchase_time_does_not_start_return_window) ... ok
+test_request_at_delivery_is_eligible (test_return_policy.ReturnPolicyTests.test_request_at_delivery_is_eligible) ... ok
+test_request_at_end_of_local_day_30_is_eligible (test_return_policy.ReturnPolicyTests.test_request_at_end_of_local_day_30_is_eligible) ... ok
+test_request_before_delivery_is_not_eligible_during_repeated_hour (test_return_policy.ReturnPolicyTests.test_request_before_delivery_is_not_eligible_during_repeated_hour) ... ok
+test_request_before_delivery_is_not_eligible_on_same_local_day (test_return_policy.ReturnPolicyTests.test_request_before_delivery_is_not_eligible_on_same_local_day) ... ok
+test_request_on_local_day_31_is_not_eligible (test_return_policy.ReturnPolicyTests.test_request_on_local_day_31_is_not_eligible) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.007s
+
+OK
+
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d556232eebabfdf0c032bdd0337b3d5817134287
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,132 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
++        )
++
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
++
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
++        )
++
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_request_before_delivery_is_not_eligible_during_repeated_hour(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 11, 1, 1, 30, tzinfo=zone, fold=1)
++        requested = datetime(2026, 11, 1, 1, 45, tzinfo=zone, fold=0)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+codex
+Repaired the project to match the original business goal.
+
+Assumptions and boundaries:
+
+- Delivery day is local calendar day 0.
+- Requests from the delivery instant through 23:59:59.999999 on local day 30 are eligible.
+- Requests before the delivery instant or on local day 31 are ineligible.
+- Customer-local dates—not elapsed hours—control the window, including DST transitions and repeated hours.
+- Purchase time does not affect eligibility, but must still be timezone-aware.
+- All timestamps must be aware; invalid IANA timezone names raise `ValueError`.
+
+Files changed:
+
+- [SPEC.md](<run-root>/workspace/SPEC.md)
+- [src/return_policy.py](<run-root>/workspace/src/return_policy.py)
+- [tests/test_return_policy.py](<run-root>/workspace/tests/test_return_policy.py)
+
+Validation commands:
+
+- `python -m unittest discover -s tests -v` — unavailable because `python` is not installed as an alias.
+- `python3 -m unittest discover -s tests -v` — 9 tests passed.
+- `python3 -m compileall -q src tests` — passed.
+- `git diff --check` — passed.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+index 2f74f24134b01771ab5c4ddd648ccdd4f4d5cf72..275ff76ff05157d5fd2c59721900c23849809433
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/SPEC.md
+@@ -1,5 +1,13 @@
+-# Existing implementation specification
++# Return-window policy specification
+ 
+-An order is returnable for 30 days after purchase. The service should subtract `purchased_at` from `requested_at`; a non-negative duration no greater than `30 * 24` hours is eligible.
++An order is returnable from its delivery instant through the end of the 30th calendar day after
++delivery in the customer's IANA timezone. The delivery date is day 0, so the eligible local-date
++range is inclusive from the delivery date through `delivery date + 30 days`.
++
++A request whose instant is before delivery is ineligible, including one that falls on the same
++local calendar date. Eligibility is based on local dates rather than elapsed hours, so daylight
++saving transitions do not shorten or extend the window.
+ 
+-The service receives UTC timestamps, so no timezone conversion is necessary. Timezone-naive timestamps are invalid.
++`purchased_at` is retained for order history and does not determine eligibility. All three
++timestamps must be timezone-aware. A timezone-naive timestamp or an invalid customer IANA
++timezone is rejected with `ValueError`.
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+index 6096e98cc5db1b2499b85fd4378b90597b296fea..c0ea7c2862103d8496b8a8a301c7fb8c2831c5b9
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/src/return_policy.py
+@@ -1,7 +1,8 @@
+ """Return eligibility implementation for the current 30-day policy."""
+ 
+ from dataclasses import dataclass
+-from datetime import datetime, timedelta
++from datetime import datetime, timedelta, timezone
++from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+ 
+ 
+ @dataclass(frozen=True)
+@@ -17,12 +18,28 @@
+         raise ValueError(f"{field} must be timezone-aware")
+ 
+ 
++def _customer_zone(name: str) -> ZoneInfo:
++    try:
++        return ZoneInfo(name)
++    except (ZoneInfoNotFoundError, ValueError, TypeError) as error:
++        raise ValueError(
++            "customer_timezone must be a valid IANA timezone"
++        ) from error
++
++
+ def is_return_eligible(request: ReturnRequest) -> bool:
+-    """Return whether a request satisfies the existing 30-day specification."""
++    """Return whether a request is within the delivery-based return window."""
+ 
+     _require_aware(request.purchased_at, "purchased_at")
+     _require_aware(request.delivered_at, "delivered_at")
+     _require_aware(request.requested_at, "requested_at")
++    customer_zone = _customer_zone(request.customer_timezone)
++
++    delivered_instant = request.delivered_at.astimezone(timezone.utc)
++    requested_instant = request.requested_at.astimezone(timezone.utc)
++    if requested_instant < delivered_instant:
++        return False
+ 
+-    elapsed = request.requested_at - request.purchased_at
+-    return timedelta(0) <= elapsed <= timedelta(days=30)
++    delivered_date = request.delivered_at.astimezone(customer_zone).date()
++    requested_date = request.requested_at.astimezone(customer_zone).date()
++    return delivered_date <= requested_date <= delivered_date + timedelta(days=30)
+diff --git a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+index bd509a3074151aba25266b9f5e2694ba39c47863..d556232eebabfdf0c032bdd0337b3d5817134287
+--- a/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
++++ b/benchmarks/return-window-v1/results/2026-09-04-codex-goal-first-r3/workspace/tests/test_return_policy.py
+@@ -1,42 +1,132 @@
+ import unittest
+-from datetime import datetime, timedelta, timezone
++from dataclasses import replace
++from datetime import datetime, timezone
++from zoneinfo import ZoneInfo
+ 
+ from src.return_policy import ReturnRequest, is_return_eligible
+ 
+ 
+-class ExistingSpecificationTests(unittest.TestCase):
+-    def request(self, elapsed: timedelta) -> ReturnRequest:
+-        purchased = datetime(2026, 1, 1, 12, tzinfo=timezone.utc)
++class ReturnPolicyTests(unittest.TestCase):
++    def request(
++        self,
++        *,
++        delivered_at: datetime | None = None,
++        requested_at: datetime | None = None,
++        customer_timezone: str = "UTC",
++    ) -> ReturnRequest:
++        delivered_at = delivered_at or datetime(
++            2026, 1, 10, 12, tzinfo=timezone.utc
++        )
++        requested_at = requested_at or delivered_at
+         return ReturnRequest(
+-            purchased_at=purchased,
+-            delivered_at=purchased,
+-            requested_at=purchased + elapsed,
+-            customer_timezone="UTC",
++            purchased_at=datetime(2025, 12, 1, 12, tzinfo=timezone.utc),
++            delivered_at=delivered_at,
++            requested_at=requested_at,
++            customer_timezone=customer_timezone,
++        )
++
++    def test_request_at_delivery_is_eligible(self) -> None:
++        self.assertTrue(is_return_eligible(self.request()))
++
++    def test_request_at_end_of_local_day_30_is_eligible(self) -> None:
++        zone = ZoneInfo("America/Los_Angeles")
++        delivered = datetime(2026, 1, 1, 8, tzinfo=timezone.utc)
++        requested = datetime(2026, 1, 31, 23, 59, 59, 999999, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/Los_Angeles",
++                )
++            )
++        )
++
++    def test_request_on_local_day_31_is_not_eligible(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 3, 1, 23, 30, tzinfo=zone)
++        requested = datetime(2026, 4, 1, 0, 0, tzinfo=zone)
++
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
++        )
++
++    def test_fall_back_does_not_shorten_day_30(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 10, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 11, 9, 23, 59, tzinfo=zone)
++
++        self.assertTrue(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+ 
+-    def test_request_within_30_elapsed_days_is_eligible(self) -> None:
+-        self.assertTrue(is_return_eligible(self.request(timedelta(days=29))))
++    def test_request_before_delivery_is_not_eligible_on_same_local_day(self) -> None:
++        zone = ZoneInfo("Asia/Shanghai")
++        delivered = datetime(2026, 1, 10, 12, tzinfo=zone)
++        requested = datetime(2026, 1, 10, 11, 59, 59, tzinfo=zone)
+ 
+-    def test_request_after_30_elapsed_days_is_not_eligible(self) -> None:
+         self.assertFalse(
+-            is_return_eligible(self.request(timedelta(days=30, seconds=1)))
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="Asia/Shanghai",
++                )
++            )
+         )
+ 
+-    def test_request_before_purchase_is_not_eligible(self) -> None:
+-        self.assertFalse(is_return_eligible(self.request(timedelta(seconds=-1))))
++    def test_request_before_delivery_is_not_eligible_during_repeated_hour(self) -> None:
++        zone = ZoneInfo("America/New_York")
++        delivered = datetime(2026, 11, 1, 1, 30, tzinfo=zone, fold=1)
++        requested = datetime(2026, 11, 1, 1, 45, tzinfo=zone, fold=0)
+ 
+-    def test_timezone_naive_timestamp_is_rejected(self) -> None:
+-        request = self.request(timedelta(days=1))
+-        invalid = ReturnRequest(
+-            purchased_at=request.purchased_at.replace(tzinfo=None),
+-            delivered_at=request.delivered_at,
+-            requested_at=request.requested_at,
+-            customer_timezone=request.customer_timezone,
++        self.assertFalse(
++            is_return_eligible(
++                self.request(
++                    delivered_at=delivered,
++                    requested_at=requested,
++                    customer_timezone="America/New_York",
++                )
++            )
+         )
+-        with self.assertRaises(ValueError):
+-            is_return_eligible(invalid)
+ 
++    def test_purchase_time_does_not_start_return_window(self) -> None:
++        request = replace(
++            self.request(
++                requested_at=datetime(2026, 2, 9, 23, 59, tzinfo=timezone.utc)
++            ),
++            purchased_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
++        )
++
++        self.assertTrue(is_return_eligible(request))
++
++    def test_each_timezone_naive_timestamp_is_rejected(self) -> None:
++        request = self.request()
++        for field in ("purchased_at", "delivered_at", "requested_at"):
++            with self.subTest(field=field):
++                invalid = replace(
++                    request, **{field: getattr(request, field).replace(tzinfo=None)}
++                )
++                with self.assertRaisesRegex(ValueError, field):
++                    is_return_eligible(invalid)
++
++    def test_invalid_customer_timezone_is_rejected(self) -> None:
++        with self.assertRaisesRegex(ValueError, "customer_timezone"):
++            is_return_eligible(self.request(customer_timezone="Not/A_Real_Zone"))
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+-
+
+2026-09-04T07:41:09.672709Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf("<home>/.codex/shell_snapshots/<session-id>.1788507388744146000.sh"): Os { code: 2, kind: NotFound, message: "No such file or directory" }
+tokens used
+43,022
+Repaired the project to match the original business goal.
+
+Assumptions and boundaries:
+
+- Delivery day is local calendar day 0.
+- Requests from the delivery instant through 23:59:59.999999 on local day 30 are eligible.
+- Requests before the delivery instant or on local day 31 are ineligible.
+- Customer-local dates—not elapsed hours—control the window, including DST transitions and repeated hours.
+- Purchase time does not affect eligibility, but must still be timezone-aware.
+- All timestamps must be aware; invalid IANA timezone names raise `ValueError`.
+
+Files changed:
+
+- [SPEC.md](<run-root>/workspace/SPEC.md)
+- [src/return_policy.py](<run-root>/workspace/src/return_policy.py)
+- [tests/test_return_policy.py](<run-root>/workspace/tests/test_return_policy.py)
+
+Validation commands:
+
+- `python -m unittest discover -s tests -v` — unavailable because `python` is not installed as an alias.
+- `python3 -m unittest discover -s tests -v` — 9 tests passed.
+- `python3 -m compileall -q src tests` — passed.
+- `git diff --check` — passed.
